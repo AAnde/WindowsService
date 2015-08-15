@@ -1,0 +1,139 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="SampleDBModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Jobs">
+          <Key>
+            <PropertyRef Name="JobNumber" />
+          </Key>
+          <Property Name="JobNumber" Type="bigint" Nullable="false" />
+          <Property Name="status" Type="int" />
+          <Property Name="Path" Type="varchar" MaxLength="100" />
+        </EntityType>
+        <EntityType Name="JobTracking">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="JobNumber" Type="bigint" />
+          <Property Name="status" Type="int" />
+          <Property Name="Path" Type="varchar" MaxLength="100" />
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+        </EntityType>
+        <Association Name="Fk_Jobtrack_JobNumber">
+          <End Role="Jobs" Type="Self.Jobs" Multiplicity="0..1" />
+          <End Role="JobTracking" Type="Self.JobTracking" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Jobs">
+              <PropertyRef Name="JobNumber" />
+            </Principal>
+            <Dependent Role="JobTracking">
+              <PropertyRef Name="JobNumber" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Function Name="spGetUniqueId" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <EntityContainer Name="SampleDBModelStoreContainer">
+          <EntitySet Name="Jobs" EntityType="Self.Jobs" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="JobTracking" EntityType="Self.JobTracking" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="Fk_Jobtrack_JobNumber" Association="Self.Fk_Jobtrack_JobNumber">
+            <End Role="Jobs" EntitySet="Jobs" />
+            <End Role="JobTracking" EntitySet="JobTracking" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="SampleDBModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Job">
+          <Key>
+            <PropertyRef Name="JobNumber" />
+          </Key>
+          <Property Name="JobNumber" Type="Int64" Nullable="false" />
+          <Property Name="status" Type="Int32" />
+          <Property Name="Path" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="JobTrackings" Relationship="SampleDBModel.Fk_Jobtrack_JobNumber" FromRole="Job" ToRole="JobTracking" />
+        </EntityType>
+        <EntityContainer Name="SampleDBEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Jobs" EntityType="Self.Job" />
+          <FunctionImport Name="spGetUniqueId" ReturnType="Collection(Int32)" />
+          <EntitySet Name="JobTrackings" EntityType="SampleDBModel.JobTracking" />
+          <AssociationSet Name="Fk_Jobtrack_JobNumber" Association="SampleDBModel.Fk_Jobtrack_JobNumber">
+            <End Role="Job" EntitySet="Jobs" />
+            <End Role="JobTracking" EntitySet="JobTrackings" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="JobTracking">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="JobNumber" Type="Int64" />
+          <Property Name="status" Type="Int32" />
+          <Property Name="Path" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <NavigationProperty Name="Job" Relationship="SampleDBModel.Fk_Jobtrack_JobNumber" FromRole="JobTracking" ToRole="Job" />
+        </EntityType>
+        <Association Name="Fk_Jobtrack_JobNumber">
+          <End Type="SampleDBModel.Job" Role="Job" Multiplicity="0..1" />
+          <End Type="SampleDBModel.JobTracking" Role="JobTracking" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Job">
+              <PropertyRef Name="JobNumber" />
+            </Principal>
+            <Dependent Role="JobTracking">
+              <PropertyRef Name="JobNumber" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="SampleDBModelStoreContainer" CdmEntityContainer="SampleDBEntities">
+          <EntitySetMapping Name="Jobs">
+            <EntityTypeMapping TypeName="SampleDBModel.Job">
+              <MappingFragment StoreEntitySet="Jobs">
+                <ScalarProperty Name="JobNumber" ColumnName="JobNumber" />
+                <ScalarProperty Name="status" ColumnName="status" />
+                <ScalarProperty Name="Path" ColumnName="Path" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="spGetUniqueId" FunctionName="SampleDBModel.Store.spGetUniqueId" />
+          <EntitySetMapping Name="JobTrackings">
+            <EntityTypeMapping TypeName="SampleDBModel.JobTracking">
+              <MappingFragment StoreEntitySet="JobTracking">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Path" ColumnName="Path" />
+                <ScalarProperty Name="status" ColumnName="status" />
+                <ScalarProperty Name="JobNumber" ColumnName="JobNumber" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
